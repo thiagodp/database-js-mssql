@@ -1,0 +1,43 @@
+{
+  "name": "database-js-mssql",
+  "version": "0.1.0",
+  "description": "Database-js driver for SQL Server that works on Linux, Mac, and Windows",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "database-js-mssql",
+    "database-js",
+    "javascript",
+    "mssql",
+    "ms-sql",
+    "sqlserver",
+    "sql-server",
+    "database",
+    "sql",
+    "query",
+    "driver",
+    "tds"
+  ],
+  "author": {
+    "name": "Thiago Delgado Pinto",
+    "url": "https://github.com/thiagodp"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thiagodp/database-js-mssql"
+  },
+  "dependencies": {
+    "mssql": "^4.0.1",
+    "tedious": "^2.6.2"
+  },
+  "devDependencies": {
+    "database-js": "^3.0.2",
+    "mocha": "^5.2.0"
+  },
+  "engines": {
+    "node": ">=4"
+  }
+}
