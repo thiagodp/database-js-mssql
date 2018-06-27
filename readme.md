@@ -7,6 +7,14 @@
 Works with MS SQL Server 2000-2017 through the  [TDS protocol](http://msdn.microsoft.com/en-us/library/dd304523.aspx).
 
 
+## Install
+
+```bash
+npm install --save database-js-mssql
+```
+
+## Example
+
 ```js
 var Connection = require('database-js').Connection;
 
@@ -27,3 +35,7 @@ var Connection = require('database-js').Connection;
     }
 })();
 ```
+
+## See also
+
+- [database-js](https://github.com/mlaanderson/database-js)
