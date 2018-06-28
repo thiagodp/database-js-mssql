@@ -106,12 +106,13 @@ module.exports = {
             user: connection.Username,
             password: connection.Password,
             options: {
+                abortTransactionOnError: true,
                 encrypt: false
             }
         };
 
         config.options = Object.assign(config.options, options || {});
-        var pool = new mssql.ConnectionPool(config);
+        var pool = new mssql.connect(config);
         return new MsSql(pool, options);
     }
 };
