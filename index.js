@@ -11,20 +11,11 @@ var mssql = require('mssql');
  */
 class MsSql {
 
-    constructor(pool, options) {
-
+    constructor(pool, params) {
         this.pool = pool;
-        this.options = options;
+        this.params = params;
         this.transaction = null;
         this._inTransaction = false;
-
-        var connectCallback = function connectCallback(err) {
-            if (err) {
-                throw err;
-            }
-        };
-
-        this.pool.connect(connectCallback);
     }
 
     /**
@@ -93,26 +84,39 @@ class MsSql {
 }
 
 module.exports = {
-    open: function(connection, options) {
+    open: function(connection) {
 
-        if ('string' === typeof connection) {
-            return new MsSql(mssql.connect(connection), options);
+        try { // avoid warnings
+            (async function openAsync(connection) {
+
+                if ('string' === typeof connection) {
+                    return new MsSql(await mssql.connect(connection));
+                }
+
+                var convertedConnection = {
+                    server: connection.Hostname || 'localhost',
+                    port: parseInt(connection.Port) || 1433,
+                    database: connection.Database,
+                    user: connection.Username,
+                    password: connection.Password,
+                    options: connection.options || {}
+                };
+
+                var config = Object.assign(
+                    {
+                        options: {
+                            abortTransactionOnError: true,
+                            encrypt: false
+                        }
+                    },
+                    convertedConnection
+                );
+
+                return new MsSql(await mssql.connect(config));
+            })(connection);
+
+        } catch ( err ) {
+            throw err; // rethrow
         }
-
-        var config = {
-            server: connection.Hostname || 'localhost',
-            port: parseInt(connection.Port) || 1433,
-            database: connection.Database,
-            user: connection.Username,
-            password: connection.Password,
-            options: {
-                abortTransactionOnError: true,
-                encrypt: false
-            }
-        };
-
-        config.options = Object.assign(config.options, options || {});
-        var pool = mssql.connect(config);
-        return new MsSql(pool, config);
     }
 };
