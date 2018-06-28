@@ -112,7 +112,7 @@ module.exports = {
         };
 
         config.options = Object.assign(config.options, options || {});
-        var pool = new mssql.connect(config);
-        return new MsSql(pool, options);
+        var pool = mssql.connect(config);
+        return new MsSql(pool, config);
     }
 };
