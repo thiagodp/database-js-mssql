@@ -1,7 +1,7 @@
 var mssql = require('mssql');
 
 /**
- * Driver for MS SQL Server
+ * Database-js driver for MS SQL Server
  *
  * @author  Thiago Delgado Pinto
  *
@@ -96,7 +96,7 @@ module.exports = {
     open: function(connection, options) {
 
         if ('string' === typeof connection) {
-            return new mssql.connect(connection);
+            return new MsSql(mssql.connect(connection), options);
         }
 
         var config = {
