@@ -4,7 +4,8 @@
   "description": "Database-js driver for SQL Server that works on Linux, Mac, and Windows",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "postversion": "git push && git push --tags"
   },
   "keywords": [
     "database-js-mssql",
