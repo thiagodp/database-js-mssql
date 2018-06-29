@@ -20,6 +20,11 @@ class MsSql {
         this._inTransaction = false;
     }
 
+    /**
+     * Creates a connection pool on demand.
+     *
+     * @returns Promise< Connection >
+     */
     async _pool() {
 
         if ( this._isConnected ) {
@@ -50,18 +55,19 @@ class MsSql {
                     abortTransactionOnError: true,
                     encrypt: false
                 }
-            }            
+            }
         );
 
         this.pool = await mssql.connect( config );
         this._isConnected = true;
-        return this.pool;        
+        return this.pool;
     }
 
     /**
      * Performs a query or data manipulation command.
      *
      * @param {string} sql
+     * @returns Promise< Array< object > >
      */
     async query(sql) {
         let pool = await this._pool();
@@ -73,25 +79,46 @@ class MsSql {
      * Executes a data manipulation command.
      *
      * @param {string} sql
+     * @returns Promise< Array< object > >
      */
     async execute(sql) {
         return await this.query(sql);
     }
 
+    /**
+     * Closes a database connection.
+     *
+     * @returns Promise<>
+     */
     async close() {
         let pool = await this._pool();
         await pool.close();
         this._isConnected = false;
     }
 
+    /**
+     * Checks whether transaction is supported.
+     *
+     * @returns boolean
+     */
     isTransactionSupported() {
         return true;
     }
 
+    /**
+     * Checks whether it is in a transaction.
+     *
+     * @returns boolean
+     */
     inTransaction() {
         return this._inTransaction;
     }
 
+    /**
+     * Begins a transaction.
+     *
+     * @returns Promise< boolean >
+     */
     async beginTransaction() {
         if ( this.inTransaction() ) {
             false;
@@ -102,6 +129,11 @@ class MsSql {
         return this.transaction.begin();
     }
 
+    /**
+     * Confirms a transaction.
+     *
+     * @returns Promise< boolean >
+     */
     async commit() {
         if ( ! this.inTransaction() ) {
             return false;
@@ -110,6 +142,11 @@ class MsSql {
         return this.transaction.commit();
     }
 
+    /**
+     * Undoes a transaction.
+     *
+     * @returns Promise< boolean >
+     */
     async rollback() {
         if ( ! this.inTransaction() ) {
             return false;
@@ -117,6 +154,7 @@ class MsSql {
         this._inTransaction = false;
         return this.transaction.rollback();
     }
+
 }
 
 module.exports = {
