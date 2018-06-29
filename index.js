@@ -11,11 +11,51 @@ var mssql = require('mssql');
  */
 class MsSql {
 
-    constructor(pool, params) {
-        this.pool = pool;
-        this.params = params;
+    constructor( connection ) {
+        this.connection = connection;
+        this._isConnected = false;
+
+        this.pool = null;
         this.transaction = null;
         this._inTransaction = false;
+    }
+
+    async _pool() {
+
+        if ( this._isConnected ) {
+            return this.pool;
+        }
+
+        var connection = this.connection;
+
+        if ('string' === typeof connection) {
+            this.pool = await mssql.connect( connection );
+            this._isConnected = true;
+            return this.pool;
+        }
+
+        var convertedConnection = {
+            server: connection.Hostname || 'localhost',
+            port: parseInt(connection.Port) || 1433,
+            database: connection.Database,
+            user: connection.Username,
+            password: connection.Password,
+            options: connection.options || {}
+        };
+
+        var config = Object.assign(
+            convertedConnection,
+            {
+                options: {
+                    abortTransactionOnError: true,
+                    encrypt: false
+                }
+            }            
+        );
+
+        this.pool = await mssql.connect( config );
+        this._isConnected = true;
+        return this.pool;        
     }
 
     /**
@@ -23,9 +63,10 @@ class MsSql {
      *
      * @param {string} sql
      */
-    query(sql) {
-        var request = new mssql.Request(this.pool);
-        return request.query(sql);
+    async query(sql) {
+        let pool = await this._pool();
+        let result = await pool.request().query( sql );
+        return result.recordset;
     }
 
     /**
@@ -33,20 +74,14 @@ class MsSql {
      *
      * @param {string} sql
      */
-    execute(sql) {
-        return this.query(sql);
+    async execute(sql) {
+        return await this.query(sql);
     }
 
-    close() {
-        var self = this;
-        return new Promise( function closePromise(resolve, reject) {
-            try {
-                self.pool.close();
-                resolve();
-            } catch (err) {
-                reject(err);
-            }
-        });
+    async close() {
+        let pool = await this._pool();
+        await pool.close();
+        this._isConnected = false;
     }
 
     isTransactionSupported() {
@@ -57,26 +92,27 @@ class MsSql {
         return this._inTransaction;
     }
 
-    beginTransaction() {
-        if (true === this.inTransaction()) {
-            return Promise.resolve(false);
+    async beginTransaction() {
+        if ( this.inTransaction() ) {
+            false;
         }
-        this.transaction = new mssql.Transaction(this.pool);
+        let pool = await this._pool();
+        this.transaction = new mssql.Transaction( pool );
         this._inTransaction = true;
         return this.transaction.begin();
     }
 
-    commit() {
-        if (false === this.inTransaction()) {
-            return Promise.resolve(false);
+    async commit() {
+        if ( ! this.inTransaction() ) {
+            return false;
         }
         this._inTransaction = false;
         return this.transaction.commit();
     }
 
-    rollback() {
-        if (false === this.inTransaction()) {
-            return Promise.resolve(false);
+    async rollback() {
+        if ( ! this.inTransaction() ) {
+            return false;
         }
         this._inTransaction = false;
         return this.transaction.rollback();
@@ -85,38 +121,6 @@ class MsSql {
 
 module.exports = {
     open: function(connection) {
-
-        try { // avoid warnings
-            (async function openAsync(connection) {
-
-                if ('string' === typeof connection) {
-                    return new MsSql(await mssql.connect(connection));
-                }
-
-                var convertedConnection = {
-                    server: connection.Hostname || 'localhost',
-                    port: parseInt(connection.Port) || 1433,
-                    database: connection.Database,
-                    user: connection.Username,
-                    password: connection.Password,
-                    options: connection.options || {}
-                };
-
-                var config = Object.assign(
-                    {
-                        options: {
-                            abortTransactionOnError: true,
-                            encrypt: false
-                        }
-                    },
-                    convertedConnection
-                );
-
-                return new MsSql(await mssql.connect(config));
-            })(connection);
-
-        } catch ( err ) {
-            throw err; // rethrow
-        }
+        return new MsSql( connection );
     }
 };

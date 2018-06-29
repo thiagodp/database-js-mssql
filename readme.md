@@ -4,7 +4,7 @@
 
 !!! WARNING !!! - This library is under development and IS NOT STABLE YET.
 
-Works with MS SQL Server 2000-2017 through the  [TDS protocol](http://msdn.microsoft.com/en-us/library/dd304523.aspx).
+It a wrapper for [node-mssql](https://github.com/thiagodp/database-js-mssql.git) and works with MS SQL Server 2000-2017.
 
 
 ## Install
