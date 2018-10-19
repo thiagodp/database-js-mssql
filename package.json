@@ -31,7 +31,7 @@
     "url": "https://github.com/thiagodp/database-js-mssql"
   },
   "dependencies": {
-    "mssql": "^4.0.1",
+    "mssql": "^4.2.2",
     "tedious": "^2.6.2"
   },
   "devDependencies": {
