@@ -91,9 +91,11 @@ class MsSql {
      * @returns Promise<>
      */
     async close() {
-        let pool = await this._pool();
-        await pool.close();
-        this._isConnected = false;
+        if ( this._isConnected ) {
+            let pool = await this._pool();
+            await pool.close();
+            this._isConnected = false;
+        }
     }
 
     /**
