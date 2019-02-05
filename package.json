@@ -1,6 +1,6 @@
 {
   "name": "database-js-mssql",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "Database-js driver for SQL Server that works on Linux, Mac, and Windows",
   "main": "index.js",
   "scripts": {
