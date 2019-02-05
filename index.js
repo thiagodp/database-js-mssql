@@ -94,6 +94,7 @@ class MsSql {
         if ( this._isConnected ) {
             let pool = await this._pool();
             await pool.close();
+            await mssql.close();
             this._isConnected = false;
         }
     }
@@ -123,7 +124,7 @@ class MsSql {
      */
     async beginTransaction() {
         if ( this.inTransaction() ) {
-            false;
+            return false;
         }
         let pool = await this._pool();
         this.transaction = new mssql.Transaction( pool );
