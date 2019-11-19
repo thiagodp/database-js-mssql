@@ -2,7 +2,7 @@
 
 > Database-js driver for SQL Server that works on Linux, Mac, and Windows
 
-This [database-js](https://github.com/mlaanderson/database-js) driver is a wrapper for [node-mssql](https://github.com/thiagodp/database-js-mssql.git) and works with MS SQL Server 2000-2017.
+This [database-js](https://github.com/mlaanderson/database-js) driver is a wrapper for [node-mssql](https://github.com/thiagodp/database-js-mssql.git) and works with MS SQL Server 2000-2017. _Pull Requests are welcome!_
 
 ## Install
 
